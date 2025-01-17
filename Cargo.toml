@@ -1,16 +1,16 @@
 [package]
-name = "basilk"
-version = "0.2.0"
+name = "basilk_pe"
+version = "0.1.0"
 edition = "2021"
-description = "A Terminal User Interface (TUI) to manage your tasks with minimal kanban logic"
+description = "A Terminal User Interface (TUI) to manage your pe tasks with minimal kanban logic"
 license = "MIT OR Apache-2.0"
-authors = ["Gabriele Alfarano <gabalpha@outlook.it>"]
+authors = ["Stanik"]
 readme = "README.md"
-homepage = "https://github.com/GabAlpha/basilk"
-repository = "https://github.com/GabAlpha/basilk"
+homepage = "https://github.com/lxvevery1/basilk_pe"
+repository = "https://github.com/lxvevery1/basilk_pe"
 keywords = ["tui", "kanban", "tasks", "ratatui", "terminal"]
 categories = ["command-line-utilities"]
-default-run = "basilk"
+default-run = "basilk_pe"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

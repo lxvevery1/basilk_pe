@@ -53,7 +53,7 @@ impl View {
         f: &mut Frame,
         area: Rect,
     ) {
-        let area = Ui::create_rect_area(10, 5, area);
+        let area = Ui::create_rect_area(10, 7, area);
 
         let task_status_list_widget = List::new(status_items.clone())
             .highlight_style(Style::default().add_modifier(Modifier::BOLD))
