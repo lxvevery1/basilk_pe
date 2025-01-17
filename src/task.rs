@@ -14,15 +14,27 @@ pub struct Task {
     pub priority: u8,
 }
 
-pub const TASK_STATUS_DONE: &str = "Done";
-pub const TASK_STATUS_ON_GOING: &str = "OnGoing";
-pub const TASK_STATUS_UP_NEXT: &str = "UpNext";
+pub const TASK_STATUS_ZERO: &str = "0";
+pub const TASK_STATUS_QUARTER: &str = "25";
+pub const TASK_STATUS_HALF: &str = "50";
+pub const TASK_STATUS_TREE_QUARTER: &str = "75";
+pub const TASK_STATUS_DONE: &str = "100";
 
-pub const TASK_STATUSES: [&'static str; 3] =
-    [TASK_STATUS_UP_NEXT, TASK_STATUS_ON_GOING, TASK_STATUS_DONE];
+pub const TASK_STATUSES: [&'static str; 5] = [
+    TASK_STATUS_ZERO,
+    TASK_STATUS_QUARTER,
+    TASK_STATUS_HALF,
+    TASK_STATUS_TREE_QUARTER,
+    TASK_STATUS_DONE,
+];
 
-const TASK_STATUSES_SORT_ORDER: [&'static str; 3] =
-    [TASK_STATUS_ON_GOING, TASK_STATUS_UP_NEXT, TASK_STATUS_DONE];
+const TASK_STATUSES_SORT_ORDER: [&'static str; 5] = [
+    TASK_STATUS_ZERO,
+    TASK_STATUS_QUARTER,
+    TASK_STATUS_HALF,
+    TASK_STATUS_TREE_QUARTER,
+    TASK_STATUS_DONE,
+];
 
 // Ascending order: 1 highest priority; 2 medium; 3 lowest
 pub const TASK_PRIORITIES: [u8; 4] = [1, 2, 3, 0];
@@ -30,9 +42,11 @@ pub const TASK_PRIORITIES: [u8; 4] = [1, 2, 3, 0];
 impl Task {
     fn get_status_color(status: &String) -> ratatui::prelude::Color {
         match status.as_str() {
-            TASK_STATUS_DONE => return Color::LightGreen,
-            TASK_STATUS_ON_GOING => return Color::Yellow,
-            TASK_STATUS_UP_NEXT => return Color::LightMagenta,
+            TASK_STATUS_ZERO => return Color::Gray,
+            TASK_STATUS_QUARTER => return Color::White,
+            TASK_STATUS_HALF => return Color::LightBlue,
+            TASK_STATUS_TREE_QUARTER => return Color::LightMagenta,
+            TASK_STATUS_DONE => return Color::LightYellow,
             _ => return Color::Gray,
         }
     }
@@ -148,7 +162,7 @@ impl Task {
 
         let new_task = Task {
             title: value.to_string(),
-            status: TASK_STATUS_UP_NEXT.to_string(),
+            status: TASK_STATUS_ZERO.to_string(),
             priority: 0,
         };
 
