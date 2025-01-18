@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     json::Json,
-    task::{Task, TASK_STATUS_DONE},
+    task::{Task, TASK_ITEMS_PE, TASK_STATUS_DONE, TASK_STATUS_ZERO},
     App,
 };
 
@@ -73,7 +73,14 @@ impl Project {
 
         let new_project = Project {
             title: value.to_string(),
-            tasks: vec![],
+            tasks: TASK_ITEMS_PE
+                .iter()
+                .map(|t| Task {
+                    title: t.to_string(),
+                    status: TASK_STATUS_ZERO.to_string(),
+                    priority: 0,
+                })
+                .collect(),
         };
 
         let mut internal_projects = app.projects.clone();

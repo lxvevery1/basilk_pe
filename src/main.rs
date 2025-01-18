@@ -206,7 +206,6 @@ impl App {
                             }
                             Enter => {
                                 Project::create(self, &mut items, input.value());
-                                Task::create_default_pe(self, &mut items);
                                 App::change_view(self, ViewMode::ViewProjects);
                             }
                             _ => {

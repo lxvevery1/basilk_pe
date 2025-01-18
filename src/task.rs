@@ -20,14 +20,6 @@ pub const TASK_STATUS_HALF: &str = "50";
 pub const TASK_STATUS_TREE_QUARTER: &str = "75";
 pub const TASK_STATUS_DONE: &str = "100";
 
-pub const TASK_STATUSES: [&'static str; 5] = [
-    TASK_STATUS_ZERO,
-    TASK_STATUS_QUARTER,
-    TASK_STATUS_HALF,
-    TASK_STATUS_TREE_QUARTER,
-    TASK_STATUS_DONE,
-];
-
 const TASK_STATUSES_SORT_ORDER: [&'static str; 5] = [
     TASK_STATUS_ZERO,
     TASK_STATUS_QUARTER,
@@ -35,8 +27,14 @@ const TASK_STATUSES_SORT_ORDER: [&'static str; 5] = [
     TASK_STATUS_TREE_QUARTER,
     TASK_STATUS_DONE,
 ];
-
-const TASK_ITEMS_PE: [&'static str; 3] = ["pushups", "squats", "dumbbell"];
+pub const TASK_STATUSES: [&'static str; 5] = [
+    TASK_STATUS_ZERO,
+    TASK_STATUS_QUARTER,
+    TASK_STATUS_HALF,
+    TASK_STATUS_TREE_QUARTER,
+    TASK_STATUS_DONE,
+];
+pub const TASK_ITEMS_PE: [&'static str; 3] = ["pushups", "squats", "dumbbell"];
 
 // Ascending order: 1 highest priority; 2 medium; 3 lowest
 pub const TASK_PRIORITIES: [u8; 4] = [1, 2, 3, 0];
@@ -177,13 +175,6 @@ impl Task {
         Task::reload(app, items)
     }
 
-    pub fn create_default_pe(app: &mut App, items: &mut Vec<ListItem>) {
-        // foreach item in TASK_ITEMS_PE call create_default
-        for task in TASK_ITEMS_PE {
-            Task::create_default(app, items, task);
-        }
-    }
-
     pub fn rename(app: &mut App, items: &mut Vec<ListItem>, value: &str) {
         let mut internal_projects = app.projects.clone();
 
@@ -226,25 +217,5 @@ impl Task {
 
         Json::write(internal_projects);
         Task::reload(app, items)
-    }
-
-    fn create_default(app: &mut App, items: &mut Vec<ListItem>, value: &str) {
-        if value.is_empty() {
-            return;
-        }
-
-        let new_task = Task {
-            title: value.to_string(),
-            status: TASK_STATUS_ZERO.to_string(),
-            priority: 0,
-        };
-
-        let mut internal_projects = app.projects.clone();
-        internal_projects[app.selected_project_index.selected().unwrap() + 1]
-            .tasks
-            .push(new_task);
-
-        Json::write(internal_projects);
-        Task::reload(app, items);
     }
 }
