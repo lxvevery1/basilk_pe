@@ -112,6 +112,10 @@ impl App {
     ) -> io::Result<()> {
         let mut input = Input::default();
 
+        // only 3 items:
+        // pushups
+        // squats
+        // dumbbell
         let mut items: Vec<ListItem> = vec![];
         Project::load_items(self, &mut items);
 
@@ -202,13 +206,8 @@ impl App {
                             }
                             Enter => {
                                 Project::create(self, &mut items, input.value());
-                                self.selected_project_index
-                                    .select(Some(self.projects.len()));
+                                Task::create_default_pe(self, &mut items);
                                 App::change_view(self, ViewMode::ViewProjects);
-
-                                Task::create(self, &mut items, "squats");
-                                Task::create(self, &mut items, "dumbbell");
-                                Task::create(self, &mut items, "pushups");
                             }
                             _ => {
                                 input.handle_event(&Event::Key(key));
