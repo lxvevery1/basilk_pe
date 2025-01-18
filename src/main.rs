@@ -116,7 +116,7 @@ impl App {
         Project::load_items(self, &mut items);
 
         let mut status_items: Vec<ListItem> = vec![];
-        Task::load_statues_items(&mut status_items);
+        Task::load_statuses_items(&mut status_items);
 
         let mut priority_items: Vec<ListItem> = vec![];
         Task::load_priority_items(&mut priority_items);
@@ -204,8 +204,11 @@ impl App {
                                 Project::create(self, &mut items, input.value());
                                 self.selected_project_index
                                     .select(Some(self.projects.len()));
-
                                 App::change_view(self, ViewMode::ViewProjects);
+
+                                Task::create(self, &mut items, "squats");
+                                Task::create(self, &mut items, "dumbbell");
+                                Task::create(self, &mut items, "pushups");
                             }
                             _ => {
                                 input.handle_event(&Event::Key(key));

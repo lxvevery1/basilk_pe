@@ -51,7 +51,7 @@ impl Task {
         }
     }
 
-    pub fn load_statues_items(items: &mut Vec<ListItem>) {
+    pub fn load_statuses_items(items: &mut Vec<ListItem>) {
         items.clear();
 
         for status in TASK_STATUSES {
