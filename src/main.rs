@@ -25,6 +25,7 @@ mod task;
 mod ui;
 mod util;
 mod view;
+use chrono::Local;
 
 use config::{Config, ConfigToml};
 use json::Json;
@@ -124,6 +125,10 @@ impl App {
 
         let mut priority_items: Vec<ListItem> = vec![];
         Task::load_priority_items(&mut priority_items);
+
+        let now = Local::now();
+        let today = now.format("%d.%m.%Y").to_string();
+        Project::create(self, &mut items, &today);
 
         if were_applied_migrations {
             self.view_mode = ViewMode::InfoMigration

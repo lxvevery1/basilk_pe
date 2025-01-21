@@ -53,7 +53,7 @@ impl Project {
                 Span::raw(project.title.clone()),
             ])];
 
-            items.push(ListItem::from(lines))
+            items.push(ListItem::from(lines));
         }
     }
 
@@ -71,12 +71,14 @@ impl Project {
             return;
         }
 
+        // create new project with items from TASK_ITEMS_PE
         let new_project = Project {
             title: value.to_string(),
             tasks: TASK_ITEMS_PE
                 .iter()
-                .map(|t| Task {
-                    title: t.to_string(),
+                .take(3)
+                .map(|&item| Task {
+                    title: item.to_string(),
                     status: TASK_STATUS_ZERO.to_string(),
                     priority: 0,
                 })
@@ -84,10 +86,16 @@ impl Project {
         };
 
         let mut internal_projects = app.projects.clone();
+
+        // duplicate case
+        if internal_projects.contains(&new_project) {
+            return;
+        }
+
         internal_projects.push(new_project);
 
         Json::write(internal_projects);
-        Project::reload(app, items)
+        Project::reload(app, items);
     }
 
     pub fn rename(app: &mut App, items: &mut Vec<ListItem>, value: &str) {
@@ -106,5 +114,11 @@ impl Project {
 
         Json::write(internal_projects);
         Project::reload(app, items)
+    }
+}
+
+impl PartialEq for Project {
+    fn eq(&self, other: &Self) -> bool {
+        self.title == other.title // Compare only the title field
     }
 }
