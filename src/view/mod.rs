@@ -1,6 +1,6 @@
 use crate::{project::Project, task::Task, ui::Ui, util::Util, App, ViewMode};
 use ratatui::{
-    layout::{Alignment, Rect},
+    layout::{Alignment, Constraint, Direction, Layout, Rect},
     style::{Modifier, Style},
     text::{Line, Text},
     widgets::{Block, Clear, HighlightSpacing, List, ListItem, Paragraph, Wrap},
@@ -113,13 +113,93 @@ impl View {
     }
 
     pub fn show_graph_activity(app: &mut App, items: &[ListItem], f: &mut Frame, area: Rect) {
-        let total_width = (grid::grid_block_conf.width + grid.col_spacing) * grid.total_col;
+        let grid = grid_activity::GridGrid {
+            total_row: 3,
+            total_col: 3,
+            start_offset: 49,
+            row_spacing: 1,
+            col_spacing: 1,
+
+            grid_block_conf: grid_activity::GridBlock {
+                view: char::from_u32(0x00002588)
+                    .map(|c| c.to_string()) // Convert the char to a String
+                    .unwrap_or_else(|| "?".to_string()), // Fallback for invalid IDs
+                width: 2,
+                height: 2,
+                color: grid_activity::COLORS[3],
+            },
+
+            blocks: vec![
+                vec![
+                    grid_activity::GridBlock {
+                        view: "█".to_string(),
+                        width: 10,
+                        height: 5,
+                        color: grid_activity::COLORS[0], // Very Light Green
+                    },
+                    grid_activity::GridBlock {
+                        view: "█".to_string(),
+                        width: 10,
+                        height: 5,
+                        color: grid_activity::COLORS[2], // Light Green
+                    },
+                    grid_activity::GridBlock {
+                        view: "█".to_string(),
+                        width: 10,
+                        height: 5,
+                        color: grid_activity::COLORS[1], // Medium Green
+                    },
+                ],
+                vec![
+                    grid_activity::GridBlock {
+                        view: "█".to_string(),
+                        width: 10,
+                        height: 5,
+                        color: grid_activity::COLORS[3], // Light Green
+                    },
+                    grid_activity::GridBlock {
+                        view: "█".to_string(),
+                        width: 10,
+                        height: 5,
+                        color: grid_activity::COLORS[4], // Medium Green
+                    },
+                    grid_activity::GridBlock {
+                        view: "█".to_string(),
+                        width: 10,
+                        height: 5,
+                        color: grid_activity::COLORS[2], // Dark Green
+                    },
+                ],
+                vec![
+                    grid_activity::GridBlock {
+                        view: "█".to_string(),
+                        width: 10,
+                        height: 5,
+                        color: grid_activity::COLORS[2], // Medium Green
+                    },
+                    grid_activity::GridBlock {
+                        view: "█".to_string(),
+                        width: 10,
+                        height: 5,
+                        color: grid_activity::COLORS[3], // Dark Green
+                    },
+                    grid_activity::GridBlock {
+                        view: "█".to_string(),
+                        width: 10,
+                        height: 5,
+                        color: grid_activity::COLORS[4], // Dark Green
+                    },
+                ],
+            ],
+        };
+
+        let total_width = (grid.grid_block_conf.width + grid.col_spacing) * grid.total_col;
 
         // Define the layout for the grid
         let grid_layout = Layout::default()
             .direction(Direction::Vertical)
             .constraints([Constraint::Percentage(100)].as_ref())
-            .split(frame.size());
+            .split(f.size());
 
         for chunk in grid_layout.iter() {
             // Calculate the starting x position to center the blocks horizontally
@@ -148,7 +228,7 @@ impl View {
                         height: grid.grid_block_conf.height,
                     };
 
-                    frame.render_widget(block, area);
+                    f.render_widget(block, block_area);
                 }
             }
         }
