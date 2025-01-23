@@ -17,6 +17,7 @@ pub struct ConfigToml {
 #[derive(Deserialize, Serialize)]
 pub struct Ui {
     pub show_help: bool,
+    // pub show_grid_activity: bool,
 }
 
 pub struct Config;
@@ -26,7 +27,10 @@ static CONFIG_FILE_NAME: &str = "config";
 impl Config {
     fn get_default() -> ConfigToml {
         ConfigToml {
-            ui: Ui { show_help: true },
+            ui: Ui {
+                show_help: true,
+                // show_grid_activity: true,
+            },
         }
     }
 

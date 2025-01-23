@@ -49,13 +49,13 @@ impl View {
 
     pub fn show_select_task_status_modal(
         app: &mut App,
-        status_items: &Vec<ListItem>,
+        status_items: &[ListItem],
         f: &mut Frame,
         area: Rect,
     ) {
         let area = Ui::create_rect_area(10, 7, area);
 
-        let task_status_list_widget = List::new(status_items.clone())
+        let task_status_list_widget = List::new(status_items.to_owned())
             .highlight_style(Style::default().add_modifier(Modifier::BOLD))
             .highlight_symbol("> ")
             .highlight_spacing(HighlightSpacing::Always)
@@ -67,13 +67,13 @@ impl View {
 
     pub fn show_select_task_priority_modal(
         app: &mut App,
-        priority_items: &Vec<ListItem>,
+        priority_items: &[ListItem],
         f: &mut Frame,
         area: Rect,
     ) {
         let area = Ui::create_rect_area(10, 6, area);
 
-        let task_status_list_widget = List::new(priority_items.clone())
+        let task_status_list_widget = List::new(priority_items.to_owned())
             .highlight_style(Style::default().add_modifier(Modifier::BOLD))
             .highlight_symbol("> ")
             .highlight_spacing(HighlightSpacing::Always)
@@ -83,7 +83,7 @@ impl View {
         f.render_stateful_widget(task_status_list_widget, area, app.use_state())
     }
 
-    pub fn show_items(app: &mut App, items: &Vec<ListItem>, f: &mut Frame, area: Rect) {
+    pub fn show_items(app: &mut App, items: &[ListItem], f: &mut Frame, area: Rect) {
         let block: Block = match app.view_mode {
             ViewMode::ViewProjects
             | ViewMode::AddProject
@@ -93,7 +93,7 @@ impl View {
         };
 
         // Iterate through all elements in the `items` and stylize them.
-        let items = items.clone();
+        let items = items.to_owned();
 
         // Create a List from all list items and highlight the currently selected one
         let items = List::new(items)
@@ -111,23 +111,25 @@ impl View {
         }
     }
 
+    pub fn show_graph_activity(app: &mut App, items: &[ListItem], f: &mut Frame, area: Rect) {}
+
     pub fn show_footer_helper(app: &mut App, f: &mut Frame, area: Rect) {
         let help_string = match app.view_mode {
             ViewMode::ViewProjects => {
-                "<Up/Down k/j> next/prev - <Enter/Right/l> go to tasks - <n> new - <r> rename - <d> delete - <q> quit"
+                "<k/j> next/prev :: <l> go to tasks :: <a/n> new :: <r> rename :: <d> delete :: <q> quit"
             }
-            ViewMode::RenameProject => "<Enter> confirm - <Esc> cancel",
-            ViewMode::AddProject => "<Enter> confirm - <Esc> cancel",
-            ViewMode::DeleteProject => "<y> confirm - <n> cancel",
+            ViewMode::RenameProject => "<Enter> confirm :: <Esc> cancel",
+            ViewMode::AddProject => "<Enter> confirm :: <Esc> cancel",
+            ViewMode::DeleteProject => "<y> confirm :: <n> cancel",
 
             ViewMode::ViewTasks => {
-                "<Up/Down k/j> next/prev - <Esc/Left/h> go to projects - <Enter> change status - <p> change priority - <n> new - <r> rename - <d> delete - <q> quit"
+                "<k/j> next/prev :: <h> go to projects :: <Enter> change status :: <p> change priority :: <a/n> new :: <r> rename :: <d> delete :: <q> quit"
             }
-            ViewMode::RenameTask => "<Enter> confirm - <Esc> cancel",
-            ViewMode::ChangeStatusTask => "<Up/Down k/j> next/prev - <Enter> confirm - <Esc> cancel",
-            ViewMode::ChangePriorityTask => "<Up/Down k/j> next/prev - <Enter> confirm - <Esc> cancel",
-            ViewMode::AddTask => "<Enter> confirm - <Esc> cancel",
-            ViewMode::DeleteTask => "<y> confirm - <n> cancel",
+            ViewMode::RenameTask => "<Enter> confirm :: <Esc> cancel",
+            ViewMode::ChangeStatusTask => "<k/j> next/prev :: <Enter> confirm :: <Esc> cancel",
+            ViewMode::ChangePriorityTask => "<k/j> next/prev :: <Enter> confirm :: <Esc> cancel",
+            ViewMode::AddTask => "<Enter> confirm :: <Esc> cancel",
+            ViewMode::DeleteTask => "<y> confirm :: <n> cancel",
             ViewMode::InfoMigration => ""
         };
 

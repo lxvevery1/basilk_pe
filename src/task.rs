@@ -20,28 +20,28 @@ pub const TASK_STATUS_HALF: &str = "50";
 pub const TASK_STATUS_TREE_QUARTER: &str = "75";
 pub const TASK_STATUS_DONE: &str = "100";
 
-const TASK_STATUSES_SORT_ORDER: [&'static str; 5] = [
+const TASK_STATUSES_SORT_ORDER: [&str; 5] = [
     TASK_STATUS_ZERO,
     TASK_STATUS_QUARTER,
     TASK_STATUS_HALF,
     TASK_STATUS_TREE_QUARTER,
     TASK_STATUS_DONE,
 ];
-pub const TASK_STATUSES: [&'static str; 5] = [
+pub const TASK_STATUSES: [&str; 5] = [
     TASK_STATUS_ZERO,
     TASK_STATUS_QUARTER,
     TASK_STATUS_HALF,
     TASK_STATUS_TREE_QUARTER,
     TASK_STATUS_DONE,
 ];
-pub const TASK_ITEMS_PE: [&'static str; 3] = ["pushups", "squats", "dumbbell"];
+pub const TASK_ITEMS_PE: [&str; 3] = ["pushups", "squats", "dumbbell"];
 
 // Ascending order: 1 highest priority; 2 medium; 3 lowest
 pub const TASK_PRIORITIES: [u8; 4] = [1, 2, 3, 0];
 
 impl Task {
-    fn get_status_color(status: &String) -> ratatui::prelude::Color {
-        match status.as_str() {
+    fn get_status_color(status: &str) -> ratatui::prelude::Color {
+        match status {
             TASK_STATUS_ZERO => return Color::Gray,
             TASK_STATUS_QUARTER => return Color::White,
             TASK_STATUS_HALF => return Color::LightBlue,
@@ -55,10 +55,7 @@ impl Task {
         items.clear();
 
         for status in TASK_STATUSES {
-            let span = Span::styled(
-                status,
-                Style::new().fg(Task::get_status_color(&status.to_string())),
-            );
+            let span = Span::styled(status, Style::new().fg(Task::get_status_color(status)));
 
             items.push(ListItem::from(span))
         }
@@ -102,7 +99,7 @@ impl Task {
         tasks.sort_by_key(|t| TASK_PRIORITIES.into_iter().position(|o| o == t.priority));
 
         let new_index = tasks
-            .into_iter()
+            .iter_mut()
             .position(|t| t.title == last_task_title_selected)
             .unwrap_or(0);
 

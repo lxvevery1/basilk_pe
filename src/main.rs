@@ -18,6 +18,7 @@ use tui_input::{backend::crossterm::EventHandler, Input};
 
 mod cli;
 mod config;
+mod grid_activity;
 mod json;
 mod migration;
 mod project;
@@ -166,7 +167,7 @@ impl App {
 
                                 App::change_view(self, ViewMode::RenameProject);
                             }
-                            Char('n') => {
+                            Char('a') | Char('n') => {
                                 input.reset();
 
                                 App::change_view(self, ViewMode::AddProject);
@@ -275,7 +276,7 @@ impl App {
 
                                 App::change_view(self, ViewMode::RenameTask);
                             }
-                            Char('n') => {
+                            Char('a') | Char('n') => {
                                 input.reset();
 
                                 App::change_view(self, ViewMode::AddTask);
@@ -403,14 +404,15 @@ impl App {
         f: &mut Frame,
         area: Rect,
         input: &Input,
-        items: &Vec<ListItem>,
-        status_items: &Vec<ListItem>,
-        priority_items: &Vec<ListItem>,
+        items: &[ListItem],
+        status_items: &[ListItem],
+        priority_items: &[ListItem],
     ) {
         let layout = Layout::vertical(if self.config.ui.show_help {
             [
                 Constraint::Percentage(2),
-                Constraint::Percentage(93),
+                Constraint::Percentage(85),
+                Constraint::Percentage(8),
                 // Space for the footer helper
                 Constraint::Percentage(5),
             ]
@@ -418,13 +420,14 @@ impl App {
             [
                 Constraint::Percentage(2),
                 // Expand the main area
-                Constraint::Percentage(98),
+                Constraint::Percentage(90),
+                Constraint::Percentage(8),
                 // Remove the footer help area
                 Constraint::Percentage(0),
             ]
         });
 
-        let [header_area, rest_area, footer_area] = layout.areas(area);
+        let [header_area, rest_area, grid_activity_area, footer_area] = layout.areas(area);
 
         if self.view_mode == ViewMode::InfoMigration {
             View::show_migration_info_modal(f, area);
@@ -460,9 +463,11 @@ impl App {
         if self.config.ui.show_help {
             View::show_footer_helper(self, f, footer_area)
         }
+
+        View::show_graph_activity(self, items, f, grid_activity_area);
     }
 
-    fn next(&mut self, items: &Vec<ListItem>) -> () {
+    fn next(&mut self, items: &[ListItem]) {
         let i = match self.use_state().selected() {
             Some(i) => {
                 if i >= items.len() - 1 {
@@ -477,7 +482,7 @@ impl App {
         self.use_state().select(Some(i))
     }
 
-    fn previous(&mut self, items: &Vec<ListItem>) {
+    fn previous(&mut self, items: &[ListItem]) {
         let i = match self.use_state().selected() {
             Some(i) => {
                 if i == 0 {
