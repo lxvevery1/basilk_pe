@@ -38,7 +38,7 @@ pub struct GridBlock {
 pub struct Grid {}
 
 impl Grid {
-    pub fn render(frame: &mut Frame, grid: GridGrid) {
+    pub fn render(frame: &mut Frame, grid: GridGrid, area: Rect) {
         let total_width = (grid.grid_block_conf.width + grid.col_spacing) * grid.total_col;
 
         // Define the layout for the grid
@@ -74,7 +74,7 @@ impl Grid {
                         height: grid.grid_block_conf.height,
                     };
 
-                    frame.render_widget(block, block_area);
+                    frame.render_widget(block, area);
                 }
             }
         }

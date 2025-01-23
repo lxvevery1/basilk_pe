@@ -1,3 +1,4 @@
+use crate::{project::Project, task::Task, ui::Ui, util::Util, App, ViewMode};
 use ratatui::{
     layout::{Alignment, Rect},
     style::{Modifier, Style},
@@ -7,7 +8,7 @@ use ratatui::{
 };
 use tui_input::Input;
 
-use crate::{project::Project, task::Task, ui::Ui, util::Util, App, ViewMode};
+mod grid_activity;
 
 pub struct View {}
 
@@ -111,7 +112,47 @@ impl View {
         }
     }
 
-    pub fn show_graph_activity(app: &mut App, items: &[ListItem], f: &mut Frame, area: Rect) {}
+    pub fn show_graph_activity(app: &mut App, items: &[ListItem], f: &mut Frame, area: Rect) {
+        let total_width = (grid::grid_block_conf.width + grid.col_spacing) * grid.total_col;
+
+        // Define the layout for the grid
+        let grid_layout = Layout::default()
+            .direction(Direction::Vertical)
+            .constraints([Constraint::Percentage(100)].as_ref())
+            .split(frame.size());
+
+        for chunk in grid_layout.iter() {
+            // Calculate the starting x position to center the blocks horizontally
+            let start_x = (chunk.width - total_width) / 2;
+            for row in 0..grid.total_row {
+                // Calculate the y position for each row
+                let start_y =
+                    grid.start_offset + chunk.y + row * (grid.col_spacing + grid.row_spacing);
+
+                for col in 0..grid.total_col {
+                    let blocks_conf = &grid.blocks[row as usize][col as usize];
+
+                    let block = Paragraph::new(
+                        grid.grid_block_conf
+                            .view
+                            .repeat(grid.grid_block_conf.width as usize),
+                    )
+                    .style(Style::default().fg(blocks_conf.color))
+                    .wrap(Wrap { trim: false });
+
+                    // Calculate the position for each block
+                    let block_area = Rect {
+                        x: start_x + col * (grid.grid_block_conf.width + grid.col_spacing),
+                        y: start_y,
+                        width: grid.grid_block_conf.width,
+                        height: grid.grid_block_conf.height,
+                    };
+
+                    frame.render_widget(block, area);
+                }
+            }
+        }
+    }
 
     pub fn show_footer_helper(app: &mut App, f: &mut Frame, area: Rect) {
         let help_string = match app.view_mode {
