@@ -2,6 +2,9 @@ use std::{
     error::Error,
     fmt::Debug,
     io::{self, stdout},
+    panic,
+    process::Command,
+    thread,
 };
 
 use cli::Cli;
@@ -79,6 +82,7 @@ fn restore_terminal() -> Result<(), Box<dyn Error>> {
 fn main() -> Result<(), Box<dyn Error>> {
     Cli::read();
 
+    color_backtrace::install();
     // setup terminal
     let terminal = init_terminal()?;
 

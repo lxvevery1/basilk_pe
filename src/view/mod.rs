@@ -1,4 +1,5 @@
 use crate::{project::Project, task::Task, ui::Ui, util::Util, App, ViewMode};
+use grid_activity::{GridBlock, GridBlockConf, COLORS};
 use ratatui::{
     layout::{Alignment, Constraint, Direction, Layout, Rect},
     style::{Modifier, Style},
@@ -113,123 +114,64 @@ impl View {
     }
 
     pub fn show_graph_activity(app: &mut App, items: &[ListItem], f: &mut Frame, area: Rect) {
-        let grid = grid_activity::GridGrid {
-            total_row: 3,
-            total_col: 3,
-            start_offset: 49,
-            row_spacing: 1,
-            col_spacing: 1,
-
-            grid_block_conf: grid_activity::GridBlock {
-                view: char::from_u32(0x00002588)
-                    .map(|c| c.to_string()) // Convert the char to a String
-                    .unwrap_or_else(|| "?".to_string()), // Fallback for invalid IDs
-                width: 2,
-                height: 2,
-                color: grid_activity::COLORS[3],
-            },
-
-            blocks: vec![
-                vec![
-                    grid_activity::GridBlock {
-                        view: "█".to_string(),
-                        width: 10,
-                        height: 5,
-                        color: grid_activity::COLORS[0], // Very Light Green
-                    },
-                    grid_activity::GridBlock {
-                        view: "█".to_string(),
-                        width: 10,
-                        height: 5,
-                        color: grid_activity::COLORS[2], // Light Green
-                    },
-                    grid_activity::GridBlock {
-                        view: "█".to_string(),
-                        width: 10,
-                        height: 5,
-                        color: grid_activity::COLORS[1], // Medium Green
-                    },
-                ],
-                vec![
-                    grid_activity::GridBlock {
-                        view: "█".to_string(),
-                        width: 10,
-                        height: 5,
-                        color: grid_activity::COLORS[3], // Light Green
-                    },
-                    grid_activity::GridBlock {
-                        view: "█".to_string(),
-                        width: 10,
-                        height: 5,
-                        color: grid_activity::COLORS[4], // Medium Green
-                    },
-                    grid_activity::GridBlock {
-                        view: "█".to_string(),
-                        width: 10,
-                        height: 5,
-                        color: grid_activity::COLORS[2], // Dark Green
-                    },
-                ],
-                vec![
-                    grid_activity::GridBlock {
-                        view: "█".to_string(),
-                        width: 10,
-                        height: 5,
-                        color: grid_activity::COLORS[2], // Medium Green
-                    },
-                    grid_activity::GridBlock {
-                        view: "█".to_string(),
-                        width: 10,
-                        height: 5,
-                        color: grid_activity::COLORS[3], // Dark Green
-                    },
-                    grid_activity::GridBlock {
-                        view: "█".to_string(),
-                        width: 10,
-                        height: 5,
-                        color: grid_activity::COLORS[4], // Dark Green
-                    },
-                ],
+        // Define the grid block configuration
+        let grid_block_conf = GridBlockConf::new(
+            2,
+            2,
+            char::from_u32(0x00002588)
+                .map(|c| c.to_string())
+                .unwrap_or_else(|| "?".to_string()),
+        );
+        // Define the blocks
+        let blocks = vec![
+            vec![
+                GridBlock::new(COLORS[0]), // Very Light Green
+                GridBlock::new(COLORS[2]), // Light Green
+                GridBlock::new(COLORS[1]), // Medium Green
             ],
-        };
+            vec![
+                GridBlock::new(COLORS[3]), // Light Green
+                GridBlock::new(COLORS[4]), // Medium Green
+                GridBlock::new(COLORS[2]), // Dark Green
+            ],
+            vec![
+                GridBlock::new(COLORS[2]), // Medium Green
+                GridBlock::new(COLORS[3]), // Dark Green
+                GridBlock::new(COLORS[4]), // Dark Green
+            ],
+        ];
 
-        let total_width = (grid.grid_block_conf.width + grid.col_spacing) * grid.total_col;
+        let grid = grid_activity::GridGrid::new(3, 3, 1, 1, 1, grid_block_conf, blocks);
 
-        // Define the layout for the grid
-        let grid_layout = Layout::default()
-            .direction(Direction::Vertical)
-            .constraints([Constraint::Percentage(100)].as_ref())
-            .split(f.size());
+        let total_rows = grid.blocks.len() as u16;
+        let total_cols = grid.blocks[0].len() as u16;
 
-        for chunk in grid_layout.iter() {
-            // Calculate the starting x position to center the blocks horizontally
-            let start_x = (chunk.width - total_width) / 2;
-            for row in 0..grid.total_row {
-                // Calculate the y position for each row
-                let start_y =
-                    grid.start_offset + chunk.y + row * (grid.col_spacing + grid.row_spacing);
+        // Calculate the size of each block
+        let block_width = (area.width - (total_cols - 1) * grid.col_spacing) / total_cols;
+        let block_height = (area.height - (total_rows - 1) * grid.row_spacing) / total_rows;
 
-                for col in 0..grid.total_col {
-                    let blocks_conf = &grid.blocks[row as usize][col as usize];
+        // Render each block in the grid
+        for (row_index, row) in grid.blocks.iter().enumerate() {
+            for (col_index, block) in row.iter().enumerate() {
+                // Calculate the position of the block
+                let block_area = Rect {
+                    x: grid.start_offset
+                        + area.x
+                        + col_index as u16 * (block_width + grid.col_spacing),
+                    y: area.y + row_index as u16 * (block_height + grid.row_spacing),
+                    width: block_width,
+                    height: block_height,
+                };
 
-                    let block = Paragraph::new(
-                        grid.grid_block_conf
-                            .view
-                            .repeat(grid.grid_block_conf.width as usize),
-                    )
-                    .style(Style::default().fg(blocks_conf.color))
-                    .wrap(Wrap { trim: false });
+                // Create a paragraph for the block
+                let paragraph =
+                    Paragraph::new(grid.block_conf.view.repeat(block_width as usize).clone())
+                        .style(block.color)
+                        .wrap(Wrap { trim: true })
+                        .centered();
 
-                    // Calculate the position for each block
-                    let block_area = Rect {
-                        x: start_x + col * (grid.grid_block_conf.width + grid.col_spacing),
-                        y: start_y,
-                        width: grid.grid_block_conf.width,
-                        height: grid.grid_block_conf.height,
-                    };
-
-                    f.render_widget(block, block_area);
-                }
+                // Render the block
+                f.render_widget(paragraph, block_area);
             }
         }
     }
