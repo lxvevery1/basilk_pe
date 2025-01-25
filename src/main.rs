@@ -414,8 +414,8 @@ impl App {
         let layout = Layout::vertical(if self.config.ui.show_help {
             [
                 Constraint::Percentage(2),
-                Constraint::Percentage(83),
-                Constraint::Percentage(13),
+                Constraint::Percentage(77),
+                Constraint::Percentage(20),
                 // Space for the footer helper
                 Constraint::Percentage(2),
             ]
