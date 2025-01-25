@@ -128,20 +128,40 @@ impl View {
                 GridBlock::new(COLORS[0]), // Very Light Green
                 GridBlock::new(COLORS[2]), // Light Green
                 GridBlock::new(COLORS[1]), // Medium Green
+                GridBlock::new(COLORS[2]), // Light Green
+                GridBlock::new(COLORS[2]), // Light Green
+                GridBlock::new(COLORS[1]), // Medium Green
+                GridBlock::new(COLORS[1]), // Medium Green
             ],
             vec![
                 GridBlock::new(COLORS[3]), // Light Green
                 GridBlock::new(COLORS[4]), // Medium Green
+                GridBlock::new(COLORS[2]), // Dark Green
+                GridBlock::new(COLORS[3]), // Light Green
+                GridBlock::new(COLORS[4]), // Medium Green
+                GridBlock::new(COLORS[2]), // Dark Green
                 GridBlock::new(COLORS[2]), // Dark Green
             ],
             vec![
                 GridBlock::new(COLORS[2]), // Medium Green
                 GridBlock::new(COLORS[3]), // Dark Green
                 GridBlock::new(COLORS[4]), // Dark Green
+                GridBlock::new(COLORS[2]), // Medium Green
+                GridBlock::new(COLORS[3]), // Dark Green
+                GridBlock::new(COLORS[4]), // Dark Green
+                GridBlock::new(COLORS[4]), // Dark Green
             ],
         ];
 
-        let grid = grid_activity::GridGrid::new(3, 3, 1, 1, 1, grid_block_conf, blocks);
+        let grid = grid_activity::GridGrid::new(
+            blocks.len() as u16,
+            blocks[0].len() as u16,
+            1,
+            1,
+            1,
+            grid_block_conf,
+            blocks,
+        );
 
         let total_rows = grid.blocks.len() as u16;
         let total_cols = grid.blocks[0].len() as u16;
@@ -164,11 +184,15 @@ impl View {
                 };
 
                 // Create a paragraph for the block
-                let paragraph =
-                    Paragraph::new(grid.block_conf.view.repeat(block_width as usize).clone())
-                        .style(block.color)
-                        .wrap(Wrap { trim: true })
-                        .centered();
+                let paragraph = Paragraph::new(
+                    grid.block_conf
+                        .view
+                        .repeat(grid.block_conf.width as usize)
+                        .clone(),
+                )
+                .style(block.color)
+                .wrap(Wrap { trim: true })
+                .centered();
 
                 // Render the block
                 f.render_widget(paragraph, block_area);
