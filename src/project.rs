@@ -20,11 +20,11 @@ pub struct Project {
 impl Project {
     fn get_indicator_done_tasks_color(percentage: usize) -> ratatui::prelude::Color {
         match percentage {
-            p if p == 0 => return Color::DarkGray,
-            p if p >= 25 && p <= 50 => return Color::LightMagenta,
-            p if p >= 50 && p < 100 => return Color::LightYellow,
-            p if p == 100 => return Color::LightGreen,
-            _ => return Color::White,
+            0 => Color::DarkGray,
+            p if (25..=49).contains(&p) => Color::LightMagenta,
+            p if (50..99).contains(&p) => Color::LightYellow,
+            100 => Color::LightGreen,
+            _ => Color::White,
         }
     }
 
@@ -40,18 +40,19 @@ impl Project {
                 .filter(|t| t.status == TASK_STATUS_DONE)
                 .collect();
 
-            let percentage = if tasks.len() == 0 {
+            let percentage = if tasks.is_empty() {
                 0
             } else {
                 (done_tasks.len() * 100) / tasks.len()
             };
 
-            let lines = vec![Line::from(vec![
+            let mut lines = vec![Line::from(vec![
                 Span::raw(format!("[{}/{}] ", done_tasks.len(), tasks.len(),)).style(
                     Style::default().fg(Project::get_indicator_done_tasks_color(percentage)),
                 ),
                 Span::raw(project.title.clone()),
             ])];
+            lines.sort_by_key(|line| line.to_string());
 
             items.push(ListItem::from(lines));
         }
@@ -63,7 +64,7 @@ impl Project {
     }
 
     pub fn get_current(app: &mut App) -> &Project {
-        return &app.projects[app.selected_project_index.selected().unwrap()];
+        &app.projects[app.selected_project_index.selected().unwrap()]
     }
 
     pub fn create(app: &mut App, items: &mut Vec<ListItem>, value: &str) {

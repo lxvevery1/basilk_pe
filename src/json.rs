@@ -91,7 +91,7 @@ impl Json {
 
             // Save into the internal state the json version of the last migration applied
             version_state.clear();
-            version_state.push_str(&version)
+            version_state.push_str(version)
         }
 
         Ok(true)
@@ -102,7 +102,11 @@ impl Json {
         let path = Json::get_json_path(version);
 
         let json = fs::read_to_string(path).unwrap();
-        return from_str::<Vec<Project>>(&json).unwrap();
+
+        let mut projects = from_str::<Vec<Project>>(&json).unwrap();
+        projects.sort_by_key(|p| p.title.clone());
+
+        projects
     }
 
     pub fn write(projects: Vec<Project>) {
