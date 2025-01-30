@@ -1,7 +1,7 @@
 use crate::{project::Project, task::Task, ui::Ui, util::Util, App, ViewMode};
 use grid_activity::{GridBlock, GridBlockConf, COLORS};
 use ratatui::{
-    layout::{Alignment, Constraint, Direction, Layout, Rect},
+    layout::{Alignment, Rect},
     style::{Modifier, Style},
     text::{Line, Text},
     widgets::{Block, Clear, HighlightSpacing, List, ListItem, Paragraph, Wrap},
@@ -9,7 +9,7 @@ use ratatui::{
 };
 use tui_input::Input;
 
-mod grid_activity;
+pub mod grid_activity;
 
 pub struct View {}
 

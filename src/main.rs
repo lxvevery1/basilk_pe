@@ -2,9 +2,6 @@ use std::{
     error::Error,
     fmt::Debug,
     io::{self, stdout},
-    panic,
-    process::Command,
-    thread,
 };
 
 use cli::Cli;
@@ -34,7 +31,7 @@ use config::{Config, ConfigToml};
 use json::Json;
 use project::Project;
 use task::{Task, TASK_PRIORITIES, TASK_STATUSES};
-use view::View;
+use view::{grid_activity::GridActivity, View};
 
 #[derive(Default, PartialEq, Debug)]
 pub enum ViewMode {
@@ -172,7 +169,6 @@ impl App {
                             }
                             Char('a') | Char('n') => {
                                 input.reset();
-
                                 App::change_view(self, ViewMode::AddProject);
                             }
                             Char('d') => {

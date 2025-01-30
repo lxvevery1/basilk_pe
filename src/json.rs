@@ -104,6 +104,7 @@ impl Json {
         let json = fs::read_to_string(path).unwrap();
 
         let mut projects = from_str::<Vec<Project>>(&json).unwrap();
+        // improve sort, so it correctly sort data
         projects.sort_by_key(|p| p.title.clone());
 
         projects
