@@ -29,7 +29,7 @@ impl Migration {
         let all_migrations: Vec<(&str, String)> = mapper.into_iter().collect();
 
         // Slice for pick only the useful migration
-        return all_migrations[(start_index.unwrap() + 1)..].to_vec();
+        all_migrations[(start_index.unwrap() + 1)..].to_vec()
     }
 
     // Migrations

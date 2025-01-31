@@ -1,5 +1,5 @@
 use crate::{project::Project, task::Task, ui::Ui, util::Util, App, ViewMode};
-use grid_activity::{GridBlock, GridBlockConf, COLORS};
+use grid_activity::{GridBlock, GridBlockConf};
 use ratatui::{
     layout::{Alignment, Rect},
     style::{Color, Modifier, Style},

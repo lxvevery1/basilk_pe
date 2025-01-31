@@ -42,12 +42,12 @@ pub const TASK_PRIORITIES: [u8; 4] = [1, 2, 3, 0];
 impl Task {
     fn get_status_color(status: &str) -> ratatui::prelude::Color {
         match status {
-            TASK_STATUS_ZERO => return Color::Gray,
-            TASK_STATUS_QUARTER => return Color::White,
-            TASK_STATUS_HALF => return Color::LightBlue,
-            TASK_STATUS_TREE_QUARTER => return Color::LightMagenta,
-            TASK_STATUS_DONE => return Color::LightYellow,
-            _ => return Color::Gray,
+            TASK_STATUS_ZERO => Color::Gray,
+            TASK_STATUS_QUARTER => Color::White,
+            TASK_STATUS_HALF => Color::LightBlue,
+            TASK_STATUS_TREE_QUARTER => Color::LightMagenta,
+            TASK_STATUS_DONE => Color::LightYellow,
+            _ => Color::Gray,
         }
     }
 
@@ -144,12 +144,12 @@ impl Task {
     }
 
     pub fn _get_all(app: &App) -> &Vec<Task> {
-        return &app.projects[app.selected_project_index.selected().unwrap()].tasks;
+        &app.projects[app.selected_project_index.selected().unwrap()].tasks
     }
 
     pub fn get_current(app: &mut App) -> &Task {
-        return &app.projects[app.selected_project_index.selected().unwrap()].tasks
-            [app.selected_task_index.selected().unwrap()];
+        &app.projects[app.selected_project_index.selected().unwrap()].tasks
+            [app.selected_task_index.selected().unwrap()]
     }
 
     pub fn create(app: &mut App, items: &mut Vec<ListItem>, value: &str) {

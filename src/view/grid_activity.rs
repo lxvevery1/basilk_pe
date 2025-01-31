@@ -87,17 +87,6 @@ impl GridActivity {
         Self::get_color_for_activity(&range_color_map, *activity)
     }
 
-    fn convert_task_status_to_color(task_status: &str) -> Color {
-        match task_status {
-            TASK_STATUS_ZERO => COLORS[4],
-            TASK_STATUS_QUARTER => COLORS[3],
-            TASK_STATUS_HALF => COLORS[2],
-            TASK_STATUS_TREE_QUARTER => COLORS[1],
-            TASK_STATUS_DONE => COLORS[0],
-            _ => COLORS[4],
-        }
-    }
-
     fn get_color_for_activity(
         range_color_map: &HashMap<std::ops::RangeInclusive<i32>, Color>,
         activity: i32,
