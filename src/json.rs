@@ -1,3 +1,5 @@
+use chrono::NaiveDate;
+use serde_json::{from_str, to_string, Value};
 use std::{
     error::Error,
     fs::{self, File},
@@ -5,8 +7,6 @@ use std::{
     path::{Path, PathBuf},
     sync::Mutex,
 };
-
-use serde_json::{from_str, to_string, Value};
 
 use crate::{
     migration::{Migration, JSON_VERSIONS},
@@ -104,8 +104,8 @@ impl Json {
         let json = fs::read_to_string(path).unwrap();
 
         let mut projects = from_str::<Vec<Project>>(&json).unwrap();
-        // improve sort, so it correctly sort data
-        projects.sort_by_key(|p| p.title.clone());
+        // improved sort, so it correctly sort projects
+        projects.sort_by_key(|p| NaiveDate::parse_from_str(&p.title, "%d.%m.%Y").unwrap());
 
         projects
     }
