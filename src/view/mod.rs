@@ -146,9 +146,6 @@ impl View {
                 let index = col * rows_n + row;
                 if index < colors.len() {
                     row_blocks.push(GridBlock::new(colors[index]));
-                } else {
-                    // Fill with a default color or leave empty
-                    row_blocks.push(GridBlock::new(Color::default()));
                 }
             }
             blocks.push(row_blocks);
