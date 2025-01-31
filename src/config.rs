@@ -39,7 +39,7 @@ impl Config {
         path.push(Json::get_dir_path().as_path());
         path.push(format!("{CONFIG_FILE_NAME}.toml"));
 
-        return path;
+        path
     }
 
     pub fn read() -> ConfigToml {
@@ -69,6 +69,6 @@ impl Config {
             }
         };
 
-        return data;
+        data
     }
 }

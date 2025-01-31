@@ -62,10 +62,10 @@ impl Migration {
                 // cf. https://docs.rs/serde_json/latest/serde_json/map/struct.Map.html#method.insert
                 project.insert("tasks".to_string(), json!(tasks)).unwrap();
 
-                return project;
+                project
             })
             .collect();
 
-        return to_string(&new_json).unwrap();
+        to_string(&new_json).unwrap()
     }
 }
