@@ -2,7 +2,7 @@ use crate::{project::Project, task::Task, ui::Ui, util::Util, App, ViewMode};
 use grid_activity::{GridBlock, GridBlockConf, COLORS};
 use ratatui::{
     layout::{Alignment, Rect},
-    style::{Modifier, Style},
+    style::{Color, Modifier, Style},
     text::{Line, Text},
     widgets::{Block, Clear, HighlightSpacing, List, ListItem, Paragraph, Wrap},
     Frame,
@@ -113,371 +113,64 @@ impl View {
         }
     }
 
-    pub fn show_graph_activity(app: &mut App, items: &[ListItem], f: &mut Frame, area: Rect) {
+    pub fn show_graph_activity(app: &mut App, f: &mut Frame, area: Rect) {
+        let colors: Vec<Color> = app
+            .projects
+            .iter()
+            .map(|project| {
+                let activity_f32 =
+                    grid_activity::GridActivity::convert_project_to_activityf32(project);
+
+                let activity_i32 = activity_f32 as i32; // Cast `f32` to `i32`
+                grid_activity::GridActivity::convert_activityi32_to_color(&activity_i32)
+            })
+            .collect();
         // Define the grid block configuration
         let grid_block_conf = GridBlockConf::new(
             2,
             2,
-            char::from_u32(0x00002588)
+            char::from_u32(0x00002588) // ASCII block
                 .map(|c| c.to_string())
                 .unwrap_or_else(|| "?".to_string()),
         );
-        // Define the blocks
-        let blocks = vec![
-            vec![
-                GridBlock::new(COLORS[0]), // Very Light Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[0]), // Very Light Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[0]), // Very Light Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[0]), // Very Light Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[0]), // Very Light Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[0]), // Very Light Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[0]), // Very Light Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[0]), // Very Light Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[1]), // Medium Green
-            ],
-            vec![
-                GridBlock::new(COLORS[3]), // Light Green
-                GridBlock::new(COLORS[4]), // Medium Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[3]), // Light Green
-                GridBlock::new(COLORS[4]), // Medium Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[3]), // Light Green
-                GridBlock::new(COLORS[4]), // Medium Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[3]), // Light Green
-                GridBlock::new(COLORS[4]), // Medium Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[3]), // Light Green
-                GridBlock::new(COLORS[4]), // Medium Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[3]), // Light Green
-                GridBlock::new(COLORS[4]), // Medium Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[3]), // Light Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[3]), // Light Green
-                GridBlock::new(COLORS[4]), // Medium Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[3]), // Light Green
-                GridBlock::new(COLORS[4]), // Medium Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[3]), // Light Green
-                GridBlock::new(COLORS[4]), // Medium Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[3]), // Light Green
-                GridBlock::new(COLORS[4]), // Medium Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[3]), // Light Green
-                GridBlock::new(COLORS[4]), // Medium Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[3]), // Light Green
-                GridBlock::new(COLORS[4]), // Medium Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[3]), // Light Green
-                GridBlock::new(COLORS[4]), // Medium Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[4]), // Medium Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[3]), // Light Green
-                GridBlock::new(COLORS[4]), // Medium Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[2]), // Dark Green
-            ],
-            vec![
-                GridBlock::new(COLORS[0]), // Very Light Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[0]), // Very Light Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[0]), // Very Light Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[0]), // Very Light Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[0]), // Very Light Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[0]), // Very Light Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[0]), // Very Light Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[2]), // Light Green
-                GridBlock::new(COLORS[1]), // Medium Green
-                GridBlock::new(COLORS[1]), // Medium Green
-            ],
-            vec![
-                GridBlock::new(COLORS[2]), // Medium Green
-                GridBlock::new(COLORS[3]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[2]), // Medium Green
-                GridBlock::new(COLORS[3]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[2]), // Medium Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[2]), // Medium Green
-                GridBlock::new(COLORS[3]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[2]), // Medium Green
-                GridBlock::new(COLORS[3]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[2]), // Medium Green
-                GridBlock::new(COLORS[3]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[2]), // Medium Green
-                GridBlock::new(COLORS[3]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[2]), // Medium Green
-                GridBlock::new(COLORS[3]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[2]), // Medium Green
-                GridBlock::new(COLORS[3]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[2]), // Medium Green
-                GridBlock::new(COLORS[3]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[3]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[2]), // Medium Green
-                GridBlock::new(COLORS[3]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[2]), // Medium Green
-                GridBlock::new(COLORS[3]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[2]), // Medium Green
-                GridBlock::new(COLORS[3]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[2]), // Medium Green
-                GridBlock::new(COLORS[3]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[2]), // Medium Green
-                GridBlock::new(COLORS[3]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-            ],
-            vec![
-                GridBlock::new(COLORS[3]), // Light Green
-                GridBlock::new(COLORS[4]), // Medium Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[3]), // Light Green
-                GridBlock::new(COLORS[4]), // Medium Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[3]), // Light Green
-                GridBlock::new(COLORS[4]), // Medium Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[3]), // Light Green
-                GridBlock::new(COLORS[4]), // Medium Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[3]), // Light Green
-                GridBlock::new(COLORS[4]), // Medium Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[3]), // Light Green
-                GridBlock::new(COLORS[4]), // Medium Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[3]), // Light Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[3]), // Light Green
-                GridBlock::new(COLORS[4]), // Medium Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[3]), // Light Green
-                GridBlock::new(COLORS[4]), // Medium Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[3]), // Light Green
-                GridBlock::new(COLORS[4]), // Medium Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[3]), // Light Green
-                GridBlock::new(COLORS[4]), // Medium Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[3]), // Light Green
-                GridBlock::new(COLORS[4]), // Medium Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[3]), // Light Green
-                GridBlock::new(COLORS[4]), // Medium Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[3]), // Light Green
-                GridBlock::new(COLORS[4]), // Medium Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[4]), // Medium Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[3]), // Light Green
-                GridBlock::new(COLORS[4]), // Medium Green
-                GridBlock::new(COLORS[2]), // Dark Green
-                GridBlock::new(COLORS[2]), // Dark Green
-            ],
-            vec![
-                GridBlock::new(COLORS[2]), // Medium Green
-                GridBlock::new(COLORS[3]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[2]), // Medium Green
-                GridBlock::new(COLORS[3]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[2]), // Medium Green
-                GridBlock::new(COLORS[3]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[2]), // Medium Green
-                GridBlock::new(COLORS[3]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[2]), // Medium Green
-                GridBlock::new(COLORS[3]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[2]), // Medium Green
-                GridBlock::new(COLORS[3]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[2]), // Medium Green
-                GridBlock::new(COLORS[3]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[2]), // Medium Green
-                GridBlock::new(COLORS[3]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[2]), // Medium Green
-                GridBlock::new(COLORS[3]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[2]), // Medium Green
-                GridBlock::new(COLORS[3]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[2]), // Medium Green
-                GridBlock::new(COLORS[3]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[2]), // Medium Green
-                GridBlock::new(COLORS[3]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[2]), // Medium Green
-                GridBlock::new(COLORS[3]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[2]), // Medium Green
-                GridBlock::new(COLORS[3]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[2]), // Medium Green
-                GridBlock::new(COLORS[3]), // Dark Green
-                GridBlock::new(COLORS[4]), // Dark Green
-                GridBlock::new(COLORS[2]), // Medium Green
-                GridBlock::new(COLORS[3]), // Dark Green
-            ],
-        ];
 
-        let grid = grid_activity::GridActivity::new(
-            blocks.len() as u16,
-            blocks[0].len() as u16,
-            1,
-            1,
-            1,
-            grid_block_conf,
-            blocks,
-        );
+        let n = 6.0 as usize;
+
+        let blocks: Vec<Vec<GridBlock>> = colors
+            .chunks(n)
+            .map(|chunk| chunk.iter().map(|&color| GridBlock::new(color)).collect())
+            .collect();
+
+        let grid = grid_activity::GridActivity::new(1, 1, 1, grid_block_conf, blocks);
 
         let total_rows = grid.blocks.len() as u16;
         let total_cols = grid.blocks[0].len() as u16;
 
+        if total_cols == 0 || total_rows == 0 {
+            eprintln!("total_rows or total_cols == 0!");
+            return;
+        }
+
+        // Calculate the total spacing
+        let total_col_spacing = (total_cols - 1) * grid.col_spacing;
+        let total_row_spacing = grid.row_spacing;
+
+        if total_col_spacing >= area.width || total_row_spacing >= area.height {
+            eprintln!(
+                "Not enough space to render the grid. Adjust spacing or increase area size {} {}.",
+                total_cols, total_rows
+            );
+            return;
+        }
+
         // Calculate the size of each block
-        let block_width = (area.width - (total_cols - 1) * grid.col_spacing) / total_cols;
-        let block_height = (area.height - (total_rows - 1) * grid.row_spacing) / total_rows;
+        let block_width = grid.block_conf.width;
+        let block_height = grid.block_conf.height;
+
+        if block_width == 0 || block_height == 0 {
+            eprintln!("Block size is too small. Adjust spacing or increase area size.");
+            return;
+        }
 
         // Render each block in the grid
         for (row_index, row) in grid.blocks.iter().enumerate() {
@@ -500,10 +193,9 @@ impl View {
                         .clone(),
                 )
                 .style(block.color)
-                .wrap(Wrap { trim: true })
+                .wrap(Wrap { trim: false })
                 .centered();
 
-                // Render the block
                 f.render_widget(paragraph, block_area);
             }
         }

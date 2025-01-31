@@ -31,7 +31,7 @@ use config::{Config, ConfigToml};
 use json::Json;
 use project::Project;
 use task::{Task, TASK_PRIORITIES, TASK_STATUSES};
-use view::{grid_activity::GridActivity, View};
+use view::View;
 
 #[derive(Default, PartialEq, Debug)]
 pub enum ViewMode {
@@ -243,7 +243,7 @@ impl App {
 
                                 let index = TASK_STATUSES
                                     .into_iter()
-                                    .position(|t| t == &Task::get_current(self).status)
+                                    .position(|t| t == Task::get_current(self).status)
                                     .unwrap();
 
                                 self.selected_status_task_index.select(Some(index));
@@ -387,11 +387,9 @@ impl App {
                             _ => {}
                         },
 
-                        ViewMode::InfoMigration => match key.code {
-                            _ => {
-                                App::change_view(self, ViewMode::ViewProjects);
-                            }
-                        },
+                        ViewMode::InfoMigration => {
+                            App::change_view(self, ViewMode::ViewProjects);
+                        }
                     }
                 }
             }
@@ -463,7 +461,7 @@ impl App {
             View::show_footer_helper(self, f, footer_area)
         }
 
-        View::show_graph_activity(self, items, f, grid_activity_area);
+        View::show_graph_activity(self, f, grid_activity_area);
     }
 
     fn next(&mut self, items: &[ListItem]) {
@@ -498,20 +496,20 @@ impl App {
 
     fn use_state(&mut self) -> &mut ListState {
         match self.view_mode {
-            ViewMode::ViewProjects => return &mut self.selected_project_index,
-            ViewMode::RenameProject => return &mut self.selected_project_index,
-            ViewMode::AddProject => return &mut self.selected_project_index,
-            ViewMode::DeleteProject => return &mut self.selected_project_index,
+            ViewMode::ViewProjects
+            | ViewMode::RenameProject
+            | ViewMode::AddProject
+            | ViewMode::DeleteProject => &mut self.selected_project_index,
 
-            ViewMode::ViewTasks => return &mut self.selected_task_index,
-            ViewMode::RenameTask => return &mut self.selected_task_index,
-            ViewMode::ChangeStatusTask => return &mut self.selected_status_task_index,
-            ViewMode::ChangePriorityTask => return &mut self.selected_priority_task_index,
-            ViewMode::AddTask => return &mut self.selected_task_index,
-            ViewMode::DeleteTask => return &mut self.selected_task_index,
+            ViewMode::ViewTasks => &mut self.selected_task_index,
+            ViewMode::RenameTask => &mut self.selected_task_index,
+            ViewMode::ChangeStatusTask => &mut self.selected_status_task_index,
+            ViewMode::ChangePriorityTask => &mut self.selected_priority_task_index,
+            ViewMode::AddTask => &mut self.selected_task_index,
+            ViewMode::DeleteTask => &mut self.selected_task_index,
 
-            ViewMode::InfoMigration => return &mut self.selected_project_index,
-        };
+            ViewMode::InfoMigration => &mut self.selected_project_index,
+        }
     }
 
     fn change_view(&mut self, mode: ViewMode) {

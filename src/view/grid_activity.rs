@@ -19,8 +19,6 @@ pub const COLORS: [Color; 5] = [
 ];
 
 pub struct GridActivity {
-    pub total_row: u16,
-    pub total_col: u16,
     pub start_offset: u16,
     pub row_spacing: u16,
     pub col_spacing: u16,
@@ -42,8 +40,6 @@ pub struct GridBlockConf {
 impl GridActivity {
     /// Constructor for GridGrid
     pub fn new(
-        total_row: u16,
-        total_col: u16,
         start_offset: u16,
         row_spacing: u16,
         col_spacing: u16,
@@ -51,8 +47,6 @@ impl GridActivity {
         blocks: Vec<Vec<GridBlock>>,
     ) -> Self {
         Self {
-            total_row,
-            total_col,
             start_offset,
             row_spacing,
             col_spacing,
@@ -74,18 +68,7 @@ impl GridActivity {
         activity
     }
 
-    fn convert_task_status_to_color(task_status: &str) -> Color {
-        match task_status {
-            TASK_STATUS_ZERO => COLORS[4],
-            TASK_STATUS_QUARTER => COLORS[3],
-            TASK_STATUS_HALF => COLORS[2],
-            TASK_STATUS_TREE_QUARTER => COLORS[1],
-            TASK_STATUS_DONE => COLORS[0],
-            _ => COLORS[4],
-        }
-    }
-
-    fn convert_activityi32_to_color(activity: &i32) -> Color {
+    pub fn convert_activityi32_to_color(activity: &i32) -> Color {
         // make a map where key is status and activity value
         // Parse the status constants into f32
         let zero: i32 = TASK_STATUS_ZERO.parse().unwrap();
@@ -102,6 +85,17 @@ impl GridActivity {
         range_color_map.insert(tree_quarter + 1..=done, COLORS[1]);
 
         Self::get_color_for_activity(&range_color_map, *activity)
+    }
+
+    fn convert_task_status_to_color(task_status: &str) -> Color {
+        match task_status {
+            TASK_STATUS_ZERO => COLORS[4],
+            TASK_STATUS_QUARTER => COLORS[3],
+            TASK_STATUS_HALF => COLORS[2],
+            TASK_STATUS_TREE_QUARTER => COLORS[1],
+            TASK_STATUS_DONE => COLORS[0],
+            _ => COLORS[4],
+        }
     }
 
     fn get_color_for_activity(
