@@ -101,13 +101,37 @@ impl Json {
         let version = VERSION.lock().unwrap().to_string();
         let path = Json::get_json_path(version);
 
+        // Read the JSON file
         let json = fs::read_to_string(path).unwrap();
 
-        let mut projects = from_str::<Vec<Project>>(&json).unwrap();
-        // improved sort, so it correctly sort projects
-        projects.sort_by_key(|p| NaiveDate::parse_from_str(&p.title, "%d.%m.%Y").unwrap());
+        // Parse the JSON into a vector of projects
+        let projects = from_str::<Vec<Project>>(&json).unwrap();
 
-        projects
+        // Parse dates and handle invalid dates gracefully
+        let mut projects_with_dates: Vec<_> = projects
+            .into_iter()
+            .map(|p| {
+                // Attempt to parse the title as a date
+                let date = NaiveDate::parse_from_str(&p.title, "%d.%m.%Y").ok();
+                (p, date)
+            })
+            .collect();
+
+        // Sort projects by date (projects with invalid dates will be placed first)
+        projects_with_dates.sort_by(|(_, date1), (_, date2)| {
+            match (date1, date2) {
+                (Some(d1), Some(d2)) => d1.cmp(d2), // Both dates are valid, compare them
+                (Some(_), None) => std::cmp::Ordering::Greater, // Valid dates come after invalid dates
+                (None, Some(_)) => std::cmp::Ordering::Less, // Invalid dates come before valid dates
+                (None, None) => std::cmp::Ordering::Equal, // Both dates are invalid, keep their order
+            }
+        });
+
+        // Extract the sorted projects (discard the dates)
+        let sorted_projects: Vec<Project> =
+            projects_with_dates.into_iter().map(|(p, _)| p).collect();
+
+        sorted_projects
     }
 
     pub fn write(projects: Vec<Project>) {

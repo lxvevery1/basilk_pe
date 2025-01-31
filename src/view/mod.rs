@@ -125,6 +125,7 @@ impl View {
                 grid_activity::GridActivity::convert_activityi32_to_color(&activity_i32)
             })
             .collect();
+
         // Define the grid block configuration
         let grid_block_conf = GridBlockConf::new(
             2,
@@ -134,14 +135,26 @@ impl View {
                 .unwrap_or_else(|| "?".to_string()),
         );
 
-        let n = 6.0 as usize;
+        let rows_n = 6;
+        let cols_n = (colors.len() as f32 / rows_n as f32).ceil() as usize;
 
-        let blocks: Vec<Vec<GridBlock>> = colors
-            .chunks(n)
-            .map(|chunk| chunk.iter().map(|&color| GridBlock::new(color)).collect())
-            .collect();
+        let mut blocks: Vec<Vec<GridBlock>> = Vec::with_capacity(rows_n);
 
-        let grid = grid_activity::GridActivity::new(1, 1, 1, grid_block_conf, blocks);
+        for row in 0..rows_n {
+            let mut row_blocks = Vec::with_capacity(cols_n);
+            for col in 0..cols_n {
+                let index = col * rows_n + row;
+                if index < colors.len() {
+                    row_blocks.push(GridBlock::new(colors[index]));
+                } else {
+                    // Fill with a default color or leave empty
+                    row_blocks.push(GridBlock::new(Color::default()));
+                }
+            }
+            blocks.push(row_blocks);
+        }
+
+        let grid = grid_activity::GridActivity::new(1, 0, 1, grid_block_conf, blocks);
 
         let total_rows = grid.blocks.len() as u16;
         let total_cols = grid.blocks[0].len() as u16;
