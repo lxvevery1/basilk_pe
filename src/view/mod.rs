@@ -185,6 +185,11 @@ impl View {
         // Render each block in the grid
         for (row_index, row) in grid.blocks.iter().enumerate() {
             for (col_index, block) in row.iter().enumerate() {
+                let block_x = grid.start_offset
+                    + area.x
+                    + col_index as u16 * (block_width + grid.col_spacing);
+                let block_y = area.y + row_index as u16 * (block_height + grid.row_spacing);
+
                 // Calculate the position of the block
                 let block_area = Rect {
                     x: grid.start_offset
@@ -195,7 +200,6 @@ impl View {
                     height: block_height,
                 };
 
-                // Create a paragraph for the block
                 let paragraph = Paragraph::new(
                     grid.block_conf
                         .view
@@ -206,7 +210,10 @@ impl View {
                 .wrap(Wrap { trim: false })
                 .centered();
 
-                f.render_widget(paragraph, block_area);
+                // make sure widget can be placed inside the window
+                if !(block_x >= area.x + area.width || block_y >= area.y + area.height) {
+                    f.render_widget(paragraph, block_area);
+                }
             }
         }
     }
