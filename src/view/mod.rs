@@ -200,6 +200,10 @@ impl View {
                     height: block_height,
                 };
 
+                if block_x >= area.x + area.width || block_y >= area.y + area.height {
+                    return;
+                }
+
                 let paragraph = Paragraph::new(
                     grid.block_conf
                         .view
@@ -211,9 +215,7 @@ impl View {
                 .centered();
 
                 // make sure widget can be placed inside the window
-                if !(block_x >= area.x + area.width || block_y >= area.y + area.height) {
-                    f.render_widget(paragraph, block_area);
-                }
+                f.render_widget(paragraph, block_area);
             }
         }
     }
