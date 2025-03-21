@@ -1,5 +1,3 @@
-use chrono::{DateTime, Utc};
-
 use ratatui::{
     style::{Color, Modifier, Style},
     text::{Line, Span},

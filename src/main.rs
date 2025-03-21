@@ -426,8 +426,6 @@ impl App {
 
         let [header_area, rest_area, grid_activity_area, footer_area] = layout.areas(area);
 
-        View::show_items(self, items, f, rest_area);
-
         if self.view_mode == ViewMode::InfoMigration {
             View::show_migration_info_modal(f, area);
         }
@@ -456,6 +454,8 @@ impl App {
             Paragraph::new(format!("::{}::", env!("CARGO_PKG_NAME"))).centered(),
             header_area,
         );
+
+        View::show_items(self, items, f, rest_area);
 
         if self.config.ui.show_help {
             View::show_footer_helper(self, f, footer_area)
