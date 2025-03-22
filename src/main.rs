@@ -455,14 +455,14 @@ impl App {
             View::show_select_task_priority_modal(self, priority_items, f, area)
         }
 
-        if self.config.ui.show_grid_activity {
-            View::show_grid_activity(self, f, grid_activity_area);
-        }
-
         f.render_widget(
             Paragraph::new(format!("::{}::", env!("CARGO_PKG_NAME"))).centered(),
             header_area,
         );
+
+        if self.config.ui.show_grid_activity {
+            View::show_grid_activity(self, f, grid_activity_area);
+        }
 
         if self.config.ui.show_help {
             View::show_footer_helper(self, f, footer_area)
