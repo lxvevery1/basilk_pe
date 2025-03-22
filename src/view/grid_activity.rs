@@ -79,16 +79,17 @@ impl GridActivity {
 
         // Create the HashMap with numeric ranges
         let mut range_color_map = HashMap::new();
-        range_color_map.insert(zero..=quarter, COLORS[4]);
-        range_color_map.insert(quarter + 1..=half, COLORS[3]);
-        range_color_map.insert(half + 1..=tree_quarter, COLORS[2]);
-        range_color_map.insert(tree_quarter + 1..=done, COLORS[1]);
+        range_color_map.insert(zero..quarter, COLORS[4]);
+        range_color_map.insert(quarter..half, COLORS[3]);
+        range_color_map.insert(half..tree_quarter, COLORS[2]);
+        range_color_map.insert(tree_quarter..done, COLORS[1]);
+        range_color_map.insert(done..done + 1, COLORS[0]);
 
         Self::get_color_for_activity(&range_color_map, *activity)
     }
 
     fn get_color_for_activity(
-        range_color_map: &HashMap<std::ops::RangeInclusive<i32>, Color>,
+        range_color_map: &HashMap<std::ops::Range<i32>, Color>,
         activity: i32,
     ) -> Color {
         for (range, color) in range_color_map {

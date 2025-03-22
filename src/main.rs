@@ -405,24 +405,27 @@ impl App {
         status_items: &[ListItem],
         priority_items: &[ListItem],
     ) {
-        let layout = Layout::vertical(if self.config.ui.show_help {
-            [
-                Constraint::Percentage(2),
-                Constraint::Percentage(74),
-                Constraint::Percentage(21),
-                // Space for the footer helper
-                Constraint::Percentage(2),
-            ]
-        } else {
-            [
-                Constraint::Percentage(2),
-                // Expand the main area
-                Constraint::Percentage(90),
-                Constraint::Percentage(8),
-                // Remove the footer help area
-                Constraint::Percentage(0),
-            ]
-        });
+        // defaults
+        let header_area = 2;
+        let mut list_area = 73;
+        let mut grid_area = 22;
+        let mut help_area = 2;
+
+        if !self.config.ui.show_help {
+            list_area += help_area;
+            help_area = 0;
+        } else if !self.config.ui.show_grid_activity {
+            list_area += grid_area;
+            grid_area = 0;
+        }
+
+        let layout = Layout::vertical([
+            Constraint::Percentage(header_area),
+            Constraint::Percentage(list_area),
+            Constraint::Percentage(grid_area),
+            // Space for the footer helper
+            Constraint::Percentage(help_area),
+        ]);
 
         let [header_area, rest_area, grid_activity_area, footer_area] = layout.areas(area);
 
@@ -452,6 +455,10 @@ impl App {
             View::show_select_task_priority_modal(self, priority_items, f, area)
         }
 
+        if self.config.ui.show_grid_activity {
+            View::show_grid_activity(self, f, grid_activity_area);
+        }
+
         f.render_widget(
             Paragraph::new(format!("::{}::", env!("CARGO_PKG_NAME"))).centered(),
             header_area,
@@ -460,8 +467,6 @@ impl App {
         if self.config.ui.show_help {
             View::show_footer_helper(self, f, footer_area)
         }
-
-        View::show_graph_activity(self, f, grid_activity_area);
     }
 
     fn next(&mut self, items: &[ListItem]) {

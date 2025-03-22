@@ -17,7 +17,7 @@ pub struct ConfigToml {
 #[derive(Deserialize, Serialize)]
 pub struct Ui {
     pub show_help: bool,
-    // pub show_grid_activity: bool,
+    pub show_grid_activity: bool,
 }
 
 pub struct Config;
@@ -29,7 +29,7 @@ impl Config {
         ConfigToml {
             ui: Ui {
                 show_help: true,
-                // show_grid_activity: true,
+                show_grid_activity: true,
             },
         }
     }

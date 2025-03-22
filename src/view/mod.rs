@@ -113,7 +113,7 @@ impl View {
         }
     }
 
-    pub fn show_graph_activity(app: &mut App, f: &mut Frame, area: Rect) {
+    pub fn show_grid_activity(app: &mut App, f: &mut Frame, area: Rect) {
         let colors: Vec<Color> = app
             .projects
             .iter()
