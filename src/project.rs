@@ -1,3 +1,4 @@
+use chrono::Local;
 use ratatui::{
     style::{Color, Style},
     text::{Line, Span},
@@ -56,6 +57,27 @@ impl Project {
 
             items.push(ListItem::from(lines));
         }
+
+        Project::create_all_projects(app, items);
+    }
+
+    pub fn create_all_projects(app: &mut App, items: &mut Vec<ListItem>) {
+        let format_str = "%d.%m.%Y";
+
+        let first_date_str = Project::get_first(app).clone().title.to_string();
+        let last_date_str = chrono::Local::now().format(format_str).to_string();
+        let first_date = chrono::NaiveDate::parse_from_str(&first_date_str, format_str)
+            .expect("Invalid first date format!");
+        let last_date = Local::now().naive_local().date();
+
+        let mut dates = Vec::new();
+
+        let mut current = first_date;
+        while current <= last_date {
+            dates.push(current.format(format_str).to_string());
+            Project::create(app, items, current.format(format_str).to_string());
+            current += chrono::Duration::days(1);
+        }
     }
 
     pub fn reload(app: &mut App, items: &mut Vec<ListItem>) {
@@ -67,9 +89,14 @@ impl Project {
         &app.projects[app.selected_project_index.selected().unwrap()]
     }
 
-    pub fn create(app: &mut App, items: &mut Vec<ListItem>, value: &str) {
+    pub fn get_first(app: &mut App) -> &Project {
+        &app.projects[0]
+    }
+
+    pub fn create(app: &mut App, items: &mut Vec<ListItem>, mut value: String) {
         if value.is_empty() {
-            return;
+            let now = chrono::Local::now();
+            value = now.format("%d.%m.%Y").to_string();
         }
 
         // create new project with items from TASK_ITEMS_PE
